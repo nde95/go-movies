@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import Movies from "./components/Movies/movies.component";
 import { useState } from "react";
 import Alert from "./Services/login/alert.component";
@@ -8,8 +8,11 @@ function App() {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertClassName, setAlertClassName] = useState("d-none")
 
+  const navigate = useNavigate()
+
   const logout = () => {
     setJwtToken("")
+    navigate("/login")
   }
 
   return (
