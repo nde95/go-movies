@@ -1,10 +1,16 @@
 import { Outlet, Link } from "react-router-dom";
 import Movies from "./components/Movies/movies.component";
 import { useState } from "react";
-
+import Alert from "./Services/login/alert.component";
 
 function App() {
   const [jwtToken, setJwtToken] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertClassName, setAlertClassName] = useState("d-none")
+
+  const logout = () => {
+    setJwtToken("")
+  }
 
   return (
     <div className="container">
@@ -16,7 +22,7 @@ function App() {
             {/* login conditional */}
             {jwtToken === ""
             ?  <Link to="/login"><span className="badge bg-success">Login</span></Link>
-            :  <a href="#!"> <span className="badge bg-danger">Log Out</span> </a>
+            :  <a href="#!"> <span onClick={logout} className="badge bg-danger">Log Out</span> </a>
             }
         </div>
         <hr className="mb-3"></hr>
@@ -41,7 +47,13 @@ function App() {
           </nav>
         </div>
         <div className="col-md-10">
-          <Outlet />
+          <Alert 
+            message={alertMessage}
+            className={alertClassName}
+          />
+          <Outlet context={{
+            jwtToken, setJwtToken, setAlertClassName, setAlertMessage
+          }}/>
         </div>
       </div>
     </div>
