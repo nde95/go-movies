@@ -10,7 +10,7 @@ export default function ErrorPage() {
             <div className="row">
                 <div className="col-md-6 offset-md-3">
                     <h1 className="mt-3">Oops!</h1>
-                    <p>Sorry, we can't find that page!</p>
+                    <p>Sorry, an error has occured!</p>
                     <p>
                         <em>{ error.statusText || error.message }</em>
                     </p>
