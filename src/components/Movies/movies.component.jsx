@@ -39,7 +39,7 @@ const Movies = () => {
                                     {m.title}
                                 </Link>
                             </td>
-                            <td>{m.releaseDate}</td>
+                            <td>{m.release_date}</td>
                             <td>{m.mpaa_rating}</td>
                             <td>{m.runtime}</td>
                         </tr>
