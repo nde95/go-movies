@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import Movies from "./components/Movies/movies.component";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Alert from "./Services/login/alert.component";
 
 function App() {
@@ -11,9 +11,40 @@ function App() {
   const navigate = useNavigate()
 
   const logout = () => {
-    setJwtToken("")
+    const requestOptions = {
+      method: "GET",
+      credentials: "include",
+    }
+
+    fetch("/logout", requestOptions)
+    .catch(error => {
+      console.log("Error logging out", error)
+    })
+    .finally(() => {
+      setJwtToken("");
+    })
     navigate("/login")
   }
+
+  useEffect(() => {
+    if (jwtToken === "") {
+      const requestOptions = {
+        method: "GET",
+        credentials: "include",
+      }
+
+      fetch("/refresh", requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.access_token) {
+          setJwtToken(data.access_token)
+        }
+      })
+      .catch(error => {
+        console.log("User is not logged in", error)
+      })
+    } 
+  }, [jwtToken])
 
   return (
     <div className="container">
