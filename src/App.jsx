@@ -1,12 +1,13 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import Movies from "./components/Movies/movies.component";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Alert from "./Services/login/alert.component";
 
 function App() {
   const [jwtToken, setJwtToken] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertClassName, setAlertClassName] = useState("d-none")
+
+  const [tickInterval, setTickInterval] = useState();
 
   const navigate = useNavigate()
 
@@ -22,9 +23,42 @@ function App() {
     })
     .finally(() => {
       setJwtToken("");
+      toggleRefresh(false)
     })
     navigate("/login")
   }
+
+  const toggleRefresh = useCallback((status) => {
+    console.log("clicked")
+
+    if(status) {
+      console.log("activiate ticking")
+      let i = setInterval(() => {
+        const requestOptions = {
+          method: "GET",
+          credentials: "include",
+        }
+        fetch("/refresh", requestOptions)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.access_token) {
+            setJwtToken(data.access_token)
+          
+          }
+        })
+        .catch(error => {
+          console.log("User is not logged in")
+        })
+      }, 600000);
+      setTickInterval(i);
+      console.log("setting tick interval to", i);
+    } else {
+      console.log("de-activating ticking");
+      console.log("clearing interval", tickInterval);
+      setTickInterval(null);
+      clearInterval(tickInterval);
+    }
+  }, [tickInterval])
 
   useEffect(() => {
     if (jwtToken === "") {
@@ -38,13 +72,16 @@ function App() {
       .then((data) => {
         if (data.access_token) {
           setJwtToken(data.access_token)
+          toggleRefresh(true)
         }
       })
       .catch(error => {
         console.log("User is not logged in", error)
       })
     } 
-  }, [jwtToken])
+  }, [jwtToken, toggleRefresh])
+
+
 
   return (
     <div className="container">
@@ -81,12 +118,12 @@ function App() {
           </nav>
         </div>
         <div className="col-md-10">
-          <Alert 
-            message={alertMessage}
-            className={alertClassName}
-          />
+         
+          <Alert  message={alertMessage} className={alertClassName} />
+            
+            
           <Outlet context={{
-            jwtToken, setJwtToken, setAlertClassName, setAlertMessage
+            jwtToken, setJwtToken, setAlertClassName, setAlertMessage, toggleRefresh,
           }}/>
         </div>
       </div>
