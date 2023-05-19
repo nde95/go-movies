@@ -15,15 +15,36 @@ const Login = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (email == "admin@test.com" && password == "tester") {
-            setJwtToken("123")
-            setAlertClassName("d-none")
-            setAlertMessage("")
-            navigate("/")
-        } else {
-            setAlertClassName("alert-danger")
-            setAlertMessage("Invalid login, please try again.")
+        // build req handlers
+        let payload = {
+            email: email,
+            password: password,
         }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: "include",
+            body: JSON.stringify(payload),
+        }
+
+        fetch(`/authenticate`, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                setAlertClassName("alert-danger");
+                setAlertMessage(data.message);
+            } else {
+                setJwtToken(data.access_token);
+                setAlertClassName("d-none");
+                setAlertMessage("");
+                navigate("/");
+            }
+        })
+        .catch(error => {
+            setAlertClassName("alert-danger");
+            setAlertMessage(error);
+        })
     }
 
 
