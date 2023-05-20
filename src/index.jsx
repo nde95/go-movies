@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { Router, Route, createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from './components/error-page/error-page.component';
 import Home from "./components/Home/home.component";
 import Movies from './components/Movies/movies.component';
@@ -33,6 +33,10 @@ const router = createBrowserRouter([
       },
       {
         path: "/admin/movie/0",
+        element: <EditMovie />
+      },
+      {
+        path: "/admin/movie/:id",
         element: <EditMovie />
       },
       {
