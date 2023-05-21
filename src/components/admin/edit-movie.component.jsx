@@ -4,6 +4,7 @@ import Input from "../forms/input.component";
 import Select from "../forms/select.component";
 import TextArea from "../forms/text-area.component";
 import CheckBox from "../forms/checkbox.component";
+import Swal from "sweetalert2";
 
 
 const EditMovie = () => {
@@ -97,6 +98,36 @@ const EditMovie = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        let errors = [];
+        let required = [
+            { field: movie.title, name: "title" },
+            { field: movie.release_date, name: "release_date" },
+            { field: movie.runtime, name: "runtime" },
+            { field: movie.description, name: "description" },
+            { field: movie.mpaa_rating, name: "mpaa_rating" },
+        ]
+        required.forEach(function(obj) {
+            if (obj.field === "") {
+                errors.push(obj.name);
+            }
+        })
+
+        if(movie.genres_array.length === 0) {
+            Swal.fire({
+                title: "Error!",
+                text: "Please select at least one genre!",
+                icon: "error",
+                confirmButtonText: "Okay",
+            })
+            errors.push("genres");
+        }
+
+        setErrors(errors);
+
+        if (errors.length > 0) {
+            return false;
+        }
     }
 
     const handleChange = () => (event) => {
@@ -137,7 +168,7 @@ const EditMovie = () => {
                 <Input title={"Title"} className={"form-control"} type={"text"} name={"title"} value={movie.title} onChange={handleChange("title")} errorDiv={hasError("title") ? "text-danger" : "d-none"} errorMsg={"Please enter a valid title"} />
                 <Input title={"Release Date"} className={"form-control"} type={"date"} name={"release_date"} value={movie.release_date} onChange={handleChange("release_date")} errorDiv={hasError("release_date") ? "text-danger" : "d-none"} errorMsg={"Please enter a valid release date"} />
                 <Input title={"Runtime (in minutes)"} className={"form-control"} type={"number"} name={"runtime"} value={movie.runtime} onChange={handleChange("runtime")} errorDiv={hasError("runtime") ? "text-danger" : "d-none"} errorMsg={"Please enter a valid runtime"} />
-                <Select title={"MPAA Rating"} className={"form-control"} name={"mpaa_rating"} options={mpaaOption} value={movie.mpaa_rating} onChange={handleChange("mpaa_rating")} errorDiv={hasError("mpaa_rating") ? "text-danger" : "d-none"} errorMsg={"Please enter a valid rating"} />
+                <Select title={"MPAA Rating"} className={"form-control"} name={"mpaa_rating"} options={mpaaOption} value={movie.mpaa_rating} onChange={handleChange("mpaa_rating")} errorDiv={hasError("mpaa_rating") ? "text-danger" : "d-none"} errorMsg={"Please enter a valid rating"} placeHolder={"Please select a rating..."} />
                 <TextArea title="Movie Description" name={"description"} value={movie.description} rows={"3"} onChange={handleChange("description")} errorMsg={"Please enter a description"} errorDiv={hasError("description") ? "text-danger" : "d-none"}  />
             <hr />
            
@@ -159,6 +190,9 @@ const EditMovie = () => {
                     </>
 
             }
+
+            <hr />
+            <button className="btn btn-primary" type="submit">Save</button>
            
             </form>
         </div>
