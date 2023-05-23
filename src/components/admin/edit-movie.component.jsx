@@ -128,6 +128,48 @@ const EditMovie = () => {
         if (errors.length > 0) {
             return false;
         }
+
+        // validation passed, save changes to form
+
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        headers.append("Authorization", "Bearer " + jwtToken);
+
+        // assuming movie entry is new
+        let method = "PUT"
+
+        // updating old entry 
+        if (movie.id > 0) {
+            method = "PATCH";
+        }
+
+        const requestBody = movie; 
+        
+        // need JSON values to be converted for release date to readable date
+        // runtime needs to be stored as int
+
+        requestBody.release_date = new Date(movie.release_date);
+        requestBody.runtime = parseInt(movie.runtime, 10); 
+
+        let requestOptions = {
+            body: JSON.stringify(requestBody),
+            method: method,
+            headers: headers,
+            credentials: "include", 
+        }
+
+        fetch(`/admin/movies/${movie.id}`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log(data.error)
+                } else {
+                    navigate("/manage-catalogue");
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }
 
     const handleChange = () => (event) => {
